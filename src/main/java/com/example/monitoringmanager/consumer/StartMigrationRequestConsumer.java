@@ -1,4 +1,4 @@
-package com.example.monitoringmanager.mapping;
+package com.example.monitoringmanager.consumer;
 
 import com.example.monitoringmanager.ApplicationSystem;
 import com.example.monitoringmanager.Connection;
@@ -20,7 +20,7 @@ import java.util.List;
 import static java.math.BigDecimal.ZERO;
 
 @Component
-public class Mapper {
+public class StartMigrationRequestConsumer {
     // listens to specific queue, once a message is received, the migration phasis starts
     // prepares all information using the database and ApplicationSystem object
     // forwards object to mapping service
@@ -33,7 +33,7 @@ public class Mapper {
     CommunicationTableRepository communicationTableRepository;
 
     @RabbitListener(queues = MessagingConfig.START_MIGRATION_QUEUE)
-    public void receiveMigrationCall(WakeupCall wakeupCall) {
+    public void handleStartMigrationRequest(WakeupCall wakeupCall) {
         System.out.println("WAKEUP CALL: " + wakeupCall.getWakeupMessage());
         ApplicationSystem applicationSystem = new ApplicationSystem();
         List<ServiceTable> allServices = serviceTableRepository.findAll();
@@ -70,7 +70,7 @@ public class Mapper {
 
         applicationSystem.setBytesExchangedTotal(bytesExchangedTotal);
 
-        template.convertAndSend(MessagingConfig.EXCHANGE, MessagingConfig.MAPPING_ROUTING_KEY, applicationSystem);
+        template.convertAndSend(MessagingConfig.INTERNAL_EXCHANGE, MessagingConfig.MAPPING_ROUTING_KEY, applicationSystem);
     }
 
     private boolean serviceAlreadyRegistered(ServiceTable entry, List<Service> services) {

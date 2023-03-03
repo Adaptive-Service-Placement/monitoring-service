@@ -5,8 +5,8 @@ COPY pom.xml /app
 RUN mvn -f /app/pom.xml clean package -DskipTests
 FROM openjdk:17-alpine
 
-COPY --from=maven-builder app/target/monitoring-manager.jar /app-service/monitoring-manager.jar
+COPY --from=maven-builder app/target/monitoring-manager.jar /app-service/monitoring-service
 WORKDIR /app-service
 
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","monitoring-manager.jar"]
+ENTRYPOINT ["java","-jar","monitoring-service"]

@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 @Component
 public class ApiConsumerRequestService {
 
-    final static String PORT = "15672";
+    final static String RABBITMQ_PORT = "15672";
 
     @Autowired
     ServiceTableRepository serviceTableRepository;
@@ -28,7 +28,7 @@ public class ApiConsumerRequestService {
     public void requestServicesFromRabbitMq() {
         String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
 
-        String requestUrl = "http://" + IP + ":" + PORT + "/api/consumers";
+        String requestUrl = "http://" + IP + ":" + RABBITMQ_PORT + "/api/consumers";
         String json = Utils.getJsonResponseFromAPI(requestUrl);
         // TODO: filter mapping, monitoring and migration service
         try {

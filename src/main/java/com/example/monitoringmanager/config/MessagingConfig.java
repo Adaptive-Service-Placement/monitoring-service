@@ -11,11 +11,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MessagingConfig {
-    //TODO: ueberlegen ob eigenen Exchange fuer kommunikation zwischen monitoring-, mapping- und migration service
+
     public static final String QUEUE = "monitoring_queue";
     public static final String EXCHANGE = "bachelor_exchange";
     public static final String MONITORING_ROUTING_KEY = "monitoring_routingKey";
 
+    public static final String INTERNAL_EXCHANGE = "internal_exchange";
     public static final String MAPPING_ROUTING_KEY = "mapping_routingkey";
 
     public static final String START_MIGRATION_QUEUE = "start.migration";
