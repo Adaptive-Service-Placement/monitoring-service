@@ -1,4 +1,4 @@
-package com.example.monitoringmanager.dto;
+package com.example.monitoringservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package com.example.monitoringmanager.mysql.repositories;
+package com.example.monitoringservice.mysql.repositories;
 
-import com.example.monitoringmanager.mysql.tables.CommunicationTable;
+import com.example.monitoringservice.mysql.tables.CommunicationTable;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

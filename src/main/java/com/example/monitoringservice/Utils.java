@@ -1,4 +1,4 @@
-package com.example.monitoringmanager;
+package com.example.monitoringservice;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

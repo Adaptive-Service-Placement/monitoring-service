@@ -1,12 +1,12 @@
-package com.example.monitoringmanager.consumer;
+package com.example.monitoringservice.consumer;
 
-import com.example.monitoringmanager.MessagingInformation;
-import com.example.monitoringmanager.Utils;
-import com.example.monitoringmanager.config.MessagingConfig;
-import com.example.monitoringmanager.mysql.repositories.CommunicationTableRepository;
-import com.example.monitoringmanager.mysql.repositories.ServiceTableRepository;
-import com.example.monitoringmanager.mysql.tables.CommunicationTable;
-import com.example.monitoringmanager.mysql.tables.ServiceTable;
+import com.example.monitoringservice.MessagingInformation;
+import com.example.monitoringservice.Utils;
+import com.example.monitoringservice.config.MessagingConfig;
+import com.example.monitoringservice.mysql.repositories.CommunicationTableRepository;
+import com.example.monitoringservice.mysql.repositories.ServiceTableRepository;
+import com.example.monitoringservice.mysql.tables.CommunicationTable;
+import com.example.monitoringservice.mysql.tables.ServiceTable;
 import com.rabbitmq.client.Connection;
 import org.json.JSONArray;
 import org.json.JSONException;

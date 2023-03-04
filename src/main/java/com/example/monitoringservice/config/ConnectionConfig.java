@@ -1,4 +1,4 @@
-package com.example.monitoringmanager.config;
+package com.example.monitoringservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

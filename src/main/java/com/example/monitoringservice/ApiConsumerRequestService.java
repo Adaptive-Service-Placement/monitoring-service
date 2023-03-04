@@ -1,7 +1,7 @@
-package com.example.monitoringmanager;
+package com.example.monitoringservice;
 
-import com.example.monitoringmanager.mysql.repositories.ServiceTableRepository;
-import com.example.monitoringmanager.mysql.tables.ServiceTable;
+import com.example.monitoringservice.mysql.repositories.ServiceTableRepository;
+import com.example.monitoringservice.mysql.tables.ServiceTable;
 import com.rabbitmq.client.Connection;
 import org.json.JSONArray;
 import org.json.JSONException;

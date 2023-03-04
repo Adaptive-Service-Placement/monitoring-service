@@ -1,4 +1,4 @@
-package com.example.monitoringmanager.config;
+package com.example.monitoringservice.config;
 
 import com.rabbitmq.client.Connection;
 import org.springframework.amqp.core.*;

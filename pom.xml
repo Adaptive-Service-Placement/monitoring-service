@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>MonitoringManager</artifactId>
+    <artifactId>MonitoringService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>MonitoringManager</name>
-    <description>MonitoringManager</description>
+    <name>MonitoringService</name>
+    <description>MonitoringService</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -89,7 +89,7 @@
     </dependencies>
 
     <build>
-        <finalName>monitoring-manager</finalName>
+        <finalName>monitoring-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -116,7 +116,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <packageName>com.example.monitoringmanager</packageName>
+                    <packageName>com.example.monitoringservice</packageName>
                     <arguments>
                         <argument>-Xequals</argument>
                         <argument>-XhashCode</argument>

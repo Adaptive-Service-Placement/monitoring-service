@@ -1,4 +1,4 @@
-package com.example.monitoringmanager.mysql.tables;
+package com.example.monitoringservice.mysql.tables;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
