@@ -49,6 +49,15 @@ services:
     depends_on:
       - rabbitmq-container
 
+  migration-service:
+    image: migration-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq-container
+    depends_on:
+      - rabbitmq-container
+
   monitoring-service:
     image: monitoring-service
     ports:
