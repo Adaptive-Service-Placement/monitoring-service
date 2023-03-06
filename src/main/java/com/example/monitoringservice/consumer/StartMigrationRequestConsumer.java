@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -50,27 +51,51 @@ public class StartMigrationRequestConsumer {
         BigDecimal bytesExchangedTotal = ZERO;
         if (allCommunications != null) {
             for (CommunicationTable entry : allCommunications) {
-                String service1Ip = entry.getService1().split(":")[0];
-                String service1Port = entry.getService1().split(":")[1];
-                Service service1 = createService(service1Ip, service1Port);
-
-                String service2Ip = entry.getService2().split(":")[0];
-                String service2Port = entry.getService2().split(":")[1];
-                Service service2 = createService(service2Ip, service2Port);
-
-                Connection connection = createConnection(service1, service2, entry.getMessages_exchanged());
+                Connection connection = createConnection(entry, applicationSystem);
 
                 if (entry.getMessages_exchanged() != null) {
                     bytesExchangedTotal = bytesExchangedTotal.add(entry.getMessages_exchanged());
                 }
 
-                applicationSystem.getConnections().add(connection);
+                if (connection != null) {
+                    applicationSystem.getConnections().add(connection);
+                }
             }
         }
 
         applicationSystem.setBytesExchangedTotal(bytesExchangedTotal);
 
         template.convertAndSend(MessagingConfig.INTERNAL_EXCHANGE, MessagingConfig.MAPPING_ROUTING_KEY, applicationSystem);
+
+        // TODO: delete all entries in table
+    }
+
+    private Connection createConnection(CommunicationTable entry, ApplicationSystem applicationSystem) {
+        String service1Ip = entry.getService1().split(":")[0];
+        String service1Port = entry.getService1().split(":")[1];
+        Service service1 = findServiceinSystem(applicationSystem.getServices(), service1Ip, service1Port);
+
+        String service2Ip = entry.getService2().split(":")[0];
+        String service2Port = entry.getService2().split(":")[1];
+        Service service2 = findServiceinSystem(applicationSystem.getServices(), service2Ip, service2Port);
+
+        if (service1 != null && service2 != null) {
+            Connection connection = new Connection();
+            connection.setService1(service1);
+            connection.setService2(service2);
+            connection.setBytesExchanged(entry.getMessages_exchanged() != null ? entry.getMessages_exchanged() : ZERO);
+
+            return connection;
+        }
+
+        return null;
+    }
+
+    private Service findServiceinSystem(List<Service> services, String serviceIp, String servicePort) {
+        return services.stream()
+                .filter(service -> serviceIp.equals(service.getIpAdresse()) && servicePort.equals(service.getPort()))
+                .findFirst()
+                .orElse(null);
     }
 
     private boolean serviceAlreadyRegistered(ServiceTable entry, List<Service> services) {
@@ -80,16 +105,13 @@ public class StartMigrationRequestConsumer {
 
     private Service createService(String ip, String port) {
         Service service = new Service();
+        service.setId(createId());
         service.setIpAdresse(ip);
         service.setPort(port);
         return service;
     }
 
-    private Connection createConnection(Service service1, Service service2, BigDecimal bytesExchanged) {
-        Connection connection = new Connection();
-        connection.setService1(service1);
-        connection.setService2(service2);
-        connection.setBytesExchanged(bytesExchanged);
-        return connection;
+    private String createId() {
+        return UUID.randomUUID().toString();
     }
 }
