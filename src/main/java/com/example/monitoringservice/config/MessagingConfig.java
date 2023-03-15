@@ -9,6 +9,9 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 public class MessagingConfig {
 
@@ -43,13 +46,11 @@ public class MessagingConfig {
     }
 
     @Bean
-    public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(MONITORING_ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding binding2(Queue queue2, TopicExchange exchange) {
-        return BindingBuilder.bind(queue2).to(exchange).with(START_MIGRATION_ROUTING_KEY);
+    public List<Binding> binding() {
+        return Arrays.asList(
+                BindingBuilder.bind(queue()).to(exchange()).with(MONITORING_ROUTING_KEY),
+                BindingBuilder.bind(queue2()).to(exchange()).with(START_MIGRATION_ROUTING_KEY)
+        );
     }
 
     @Bean
