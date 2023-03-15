@@ -38,8 +38,15 @@ public class ApplicationMessageConsumer {
 
     @RabbitListener(queues = MessagingConfig.QUEUE)
     public void consumeMessagingInformation(MessagingInformation messagingInformation) {
+        System.out.println("Sent message: " + messagingInformation);
+        System.out.println("Exchange: " + messagingInformation.getExchange());
+        System.out.println("Routing Key: " + messagingInformation.getRoutingKey());
         System.out.println("Service: " + messagingInformation.getServiceIp());
-        System.out.println("Message size: " + messagingInformation.getMessageSize().toString());
+        if (messagingInformation.getMessageSize() != null) {
+            System.out.println("Message size: " + messagingInformation.getMessageSize().toString());
+        } else {
+            System.out.println("No information on message size received.");
+        }
 
         System.out.println("THIS IS HOST ADDRESS: " + Objects.requireNonNull(connection).getAddress().getHostAddress());
 
@@ -180,7 +187,7 @@ public class ApplicationMessageConsumer {
     }
 
     private void saveCommunication(String service1, String service2, BigDecimal messagesExchanged) {
-        CommunicationTable communication = communicationTableRepository.findFirstByService1AndService2(service1, service2);
+        CommunicationTable communication = communicationTableRepository.findFirstConnectionBetweenServices(service1, service2);
 
         if (communication != null) {
             communication.setMessages_exchanged(communication.getMessages_exchanged().add(messagesExchanged));
