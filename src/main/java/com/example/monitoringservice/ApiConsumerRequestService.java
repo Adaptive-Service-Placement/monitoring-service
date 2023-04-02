@@ -41,6 +41,8 @@ public class ApiConsumerRequestService {
                         String hostPort = getPeerPort(jsonObject);
                         String queueName = getQueueName(jsonObject);
                         if (hostIp != null && hostPort != null && queueName != null) {
+                            System.out.println("Detected Service: " + hostIp + ":" + hostPort);
+                            System.out.println("Listens to: " + queueName);
                             ServiceTable service = new ServiceTable();
                             service.setServiceIp(hostIp);
                             service.setServicePort(hostPort);
