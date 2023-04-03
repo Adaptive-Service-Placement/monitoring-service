@@ -4,6 +4,7 @@ import com.example.monitoringservice.mysql.repositories.ServiceTableRepository;
 import com.example.monitoringservice.mysql.tables.ServiceTable;
 import com.rabbitmq.client.Connection;
 import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1NodeList;
@@ -16,6 +17,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
@@ -65,14 +67,25 @@ public class ApiConsumerRequestService {
         }
     }
 
-    private int determineNumberOfAvailableKubernetesNodes() throws Exception {
-        ApiClient client = Config.defaultClient();
+    private int determineNumberOfAvailableKubernetesNodes() {
+        ApiClient client = null;
+        try {
+            client = Config.defaultClient();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Configuration.setDefaultApiClient(client);
 
         CoreV1Api api = new CoreV1Api();
 
-        V1NodeList nodeList = api.listNode(null, null, null, null, null, null, null, null, 10, false);
-        return nodeList.getItems().size();
+        try {
+            V1NodeList nodeList = null;
+            nodeList = api.listNode(null, null, null, null, null, null, null, null, 10, false);
+            return nodeList.getItems().size();
+        } catch (ApiException e) {
+            System.out.println(e.getResponseBody());
+        }
+        return 0;
     }
 
     private String getPeerIp(JSONObject jsonObject) {
