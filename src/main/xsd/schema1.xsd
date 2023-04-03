@@ -18,6 +18,7 @@
             <xs:element name="connections" type="connection" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element name="services" type="service" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element name="bytesExchangedTotal" type="xs:decimal"/>
+            <xs:element name="numberOfNodes" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
 

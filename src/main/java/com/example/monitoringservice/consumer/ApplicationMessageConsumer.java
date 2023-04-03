@@ -22,10 +22,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.example.monitoringservice.RabbitmqApiUrlProvider.*;
+
 @Component
 public class ApplicationMessageConsumer {
-
-    final static String RABBITMQ_PORT = "15672";
 
     @Autowired
     RabbitTemplate template;
@@ -77,7 +77,7 @@ public class ApplicationMessageConsumer {
 
     private String requestConsumerFromQueue(String queueName) {
         final String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
-        String requestUrl = "http://" + IP + ":" + RABBITMQ_PORT + "/api/consumers";
+        String requestUrl = rabbitmqApiConsumersUrl(IP);
         String json = Utils.getJsonResponseFromAPI(requestUrl);
 
         try {
@@ -149,7 +149,7 @@ public class ApplicationMessageConsumer {
 
     private String requestPortWithHostIp(String ip) {
         final String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
-        String requestUrl = "http://" + IP + ":" + RABBITMQ_PORT + "/api/connections";
+        String requestUrl = rabbitmqApiConnectionsUrl(IP);
         String json = Utils.getJsonResponseFromAPI(requestUrl);
 
         try {
@@ -204,7 +204,7 @@ public class ApplicationMessageConsumer {
     private List<String> getDestination(String exchange, String routingKey) throws Exception {
         String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
 
-        String requestUrl = "http://" + IP + ":" + RABBITMQ_PORT + "/api/exchanges/%2F/" + exchange + "/bindings/source";
+        String requestUrl = rabbitmqApiExchangeSource(IP, exchange);
 
         return getDestinationFromJsonAndRoutingKey(Utils.getJsonResponseFromAPI(requestUrl), routingKey);
     }

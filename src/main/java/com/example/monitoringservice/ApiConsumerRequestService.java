@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
+import static com.example.monitoringservice.RabbitmqApiUrlProvider.rabbitmqApiConsumersUrl;
+
 @Component
 public class ApiConsumerRequestService {
-
-    final static String RABBITMQ_PORT = "15672";
 
     @Autowired
     ServiceTableRepository serviceTableRepository;
@@ -28,7 +28,7 @@ public class ApiConsumerRequestService {
     public void requestServicesFromRabbitMq() {
         String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
 
-        String requestUrl = "http://" + IP + ":" + RABBITMQ_PORT + "/api/consumers";
+        String requestUrl = rabbitmqApiConsumersUrl(IP);
         String json = Utils.getJsonResponseFromAPI(requestUrl);
         // TODO: filter mapping, monitoring and migration service
         try {
