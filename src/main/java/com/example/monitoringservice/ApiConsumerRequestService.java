@@ -3,6 +3,11 @@ package com.example.monitoringservice;
 import com.example.monitoringservice.mysql.repositories.ServiceTableRepository;
 import com.example.monitoringservice.mysql.tables.ServiceTable;
 import com.rabbitmq.client.Connection;
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.models.V1NodeList;
+import io.kubernetes.client.util.Config;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +58,21 @@ public class ApiConsumerRequestService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        try {
+            System.out.println("THIS IS K: " + determineNumberOfAvailableKubernetesNodes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int determineNumberOfAvailableKubernetesNodes() throws Exception {
+        ApiClient client = Config.defaultClient();
+        Configuration.setDefaultApiClient(client);
+
+        CoreV1Api api = new CoreV1Api();
+
+        V1NodeList nodeList = api.listNode(null, null, null, null, null, null, null, null, 10, false);
+        return nodeList.getItems().size();
     }
 
     private String getPeerIp(JSONObject jsonObject) {
