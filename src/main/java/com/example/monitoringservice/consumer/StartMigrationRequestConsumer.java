@@ -10,15 +10,17 @@ import com.example.monitoringservice.mysql.repositories.ServiceTableRepository;
 import com.example.monitoringservice.mysql.tables.CommunicationTable;
 import com.example.monitoringservice.mysql.tables.ServiceTable;
 import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1NodeList;
-import io.kubernetes.client.util.Config;
+import io.kubernetes.client.util.ClientBuilder;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -75,21 +77,31 @@ public class StartMigrationRequestConsumer {
             System.out.println("THI IS K: " + k);
             applicationSystem.setNumberOfNodes(k);
             template.convertAndSend(MessagingConfig.INTERNAL_EXCHANGE, MessagingConfig.MAPPING_ROUTING_KEY, applicationSystem);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ApiException e) {
+            System.out.println("A problem occured when requesting the Kubernetes API.");
+            System.out.println(e.getResponseBody());
         }
 
         // TODO: delete all entries in table
     }
 
-    private int determineNumberOfAvailableKubernetesNodes() throws Exception {
-        ApiClient client = Config.defaultClient();
+    private int determineNumberOfAvailableKubernetesNodes() throws ApiException {
+        ApiClient client = null;
+        try {
+            client = ClientBuilder.cluster().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Configuration.setDefaultApiClient(client);
 
         CoreV1Api api = new CoreV1Api();
 
-        V1NodeList nodeList = api.listNode(null, null, null, null, null, null, null, null, 10, false);
-        return nodeList.getItems().size();
+        V1NodeList nodeList = null;
+        nodeList = api.listNode(null, null, null, null, null, null, null, null, 10, false);
+        if (nodeList != null) {
+            return nodeList.getItems().size();
+        }
+        return 0;
     }
 
     private Connection createConnection(CommunicationTable entry, ApplicationSystem applicationSystem) {
