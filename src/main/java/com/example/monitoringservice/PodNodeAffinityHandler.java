@@ -49,6 +49,11 @@ public class PodNodeAffinityHandler {
                     pod.setSpec(pod.getSpec().affinity(affinity));
                 }
 
+                System.out.println("Pod's labels:");
+                for (Entry<String, String> k : Objects.requireNonNull(pod.getMetadata().getLabels()).entrySet()) {
+                    System.out.println(k.getKey() + ":" + k.getValue());
+                }
+
                 replacePodOnceTerminated(pod);
 //                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
             }
@@ -69,6 +74,7 @@ public class PodNodeAffinityHandler {
             V1ObjectMeta meta = updatedPod.getMetadata();
             if (Objects.equals(Objects.requireNonNull(meta).getName(), Objects.requireNonNull(pod.getMetadata()).getName())) {
                 if ("Succeeded".equals(Objects.requireNonNull(updatedPod.getStatus()).getPhase())) {
+                    System.out.println("Oh Status hase been changed!");
                     api.createNamespacedPod("default", pod, null, null, null, null);
                 }
             }
