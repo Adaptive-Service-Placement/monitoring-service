@@ -70,9 +70,11 @@ public class PodNodeAffinityHandler {
                 }.getType());
 
         for (Watch.Response<V1Pod> event : watch) {
+            System.out.println("Waiting for events ...");
             V1Pod updatedPod = event.object;
             V1ObjectMeta meta = updatedPod.getMetadata();
             if (Objects.equals(Objects.requireNonNull(meta).getName(), Objects.requireNonNull(pod.getMetadata()).getName())) {
+                System.out.println("Test does this even happen?");
                 if ("Succeeded".equals(Objects.requireNonNull(updatedPod.getStatus()).getPhase())) {
                     System.out.println("Oh Status hase been changed!");
                     api.createNamespacedPod("default", pod, null, null, null, null);
