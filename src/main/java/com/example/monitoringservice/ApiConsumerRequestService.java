@@ -113,6 +113,7 @@ public class ApiConsumerRequestService {
     private V1Pod clone(V1Pod pod) {
         V1Pod clone = new V1Pod();
         clone.setMetadata(pod.getMetadata());
+        Objects.requireNonNull(pod.getMetadata()).setResourceVersion(null);
         clone.setSpec(pod.getSpec());
         clone.setApiVersion(pod.getApiVersion());
         clone.setKind(pod.getKind());
