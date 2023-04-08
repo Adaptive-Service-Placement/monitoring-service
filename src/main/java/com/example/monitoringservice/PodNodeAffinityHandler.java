@@ -62,12 +62,12 @@ public class PodNodeAffinityHandler {
     }
 
     private void replacePodOnceTerminated(V1Pod pod) throws ApiException {
-        api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
-
         Watch<V1Pod> watch = Watch.createWatch(api.getApiClient(),
                 api.listNamespacedPodCall("default", null, null, null, null, null, null, null, null, 10, true, null),
                 new TypeToken<Watch.Response<V1Pod>>() {
                 }.getType());
+
+        api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
 
         for (Watch.Response<V1Pod> event : watch) {
             System.out.println("Waiting for events ...");
