@@ -75,6 +75,7 @@ public class PodNodeAffinityHandler {
             V1ObjectMeta meta = updatedPod.getMetadata();
             if (Objects.equals(Objects.requireNonNull(meta).getName(), Objects.requireNonNull(pod.getMetadata()).getName())) {
                 System.out.println("Test does this even happen?");
+                System.out.println("This is the status: " + Objects.requireNonNull(updatedPod.getStatus()).getPhase());
                 if ("Succeeded".equals(Objects.requireNonNull(updatedPod.getStatus()).getPhase())) {
                     System.out.println("Oh Status hase been changed!");
                     api.createNamespacedPod("default", pod, null, null, null, null);
