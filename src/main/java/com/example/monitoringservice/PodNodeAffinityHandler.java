@@ -46,7 +46,10 @@ public class PodNodeAffinityHandler {
                     pod.setSpec(pod.getSpec().affinity(affinity));
                 }
 
-                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
+//                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
+                api.deleteNamespacedPod(pod.getMetadata().getName(), "default", null, null, null, null, null, null);
+
+                api.createNamespacedPod("default", pod, null, null, null, null);
             }
             index++;
         }

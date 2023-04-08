@@ -92,13 +92,13 @@ public class ApiConsumerRequestService {
         if (allNodes.size() >= 3 && allPods.size() >= 5) {
             System.out.println("Anzahl and Nodes und Pods passt.");
             System.out.println("Setting.. " + Objects.requireNonNull(allPods.get(0).getMetadata()).getName() + " and " + Objects.requireNonNull(allPods.get(1).getMetadata()).getName());
-            assignement.put(allNodes.get(0), of(allPods.get(0), allPods.get(1)));
+            assignement.put(allNodes.get(0), of(clone(allPods.get(0)), clone(allPods.get(1))));
 
             System.out.println("Setting.. " + Objects.requireNonNull(allPods.get(2).getMetadata()).getName() + " and " + Objects.requireNonNull(allPods.get(3).getMetadata()).getName());
-            assignement.put(allNodes.get(1), of(allPods.get(2), allPods.get(3)));
+            assignement.put(allNodes.get(1), of(clone(allPods.get(2)), clone(allPods.get(3))));
 
             System.out.println("Setting.. " + Objects.requireNonNull(allPods.get(4).getMetadata()).getName());
-            assignement.put(allNodes.get(2), of(allPods.get(4)));
+            assignement.put(allNodes.get(2), of(clone(allPods.get(4))));
         }
 
         PodNodeAffinityHandler handler = new PodNodeAffinityHandler(api, assignement);
@@ -108,6 +108,17 @@ public class ApiConsumerRequestService {
             System.out.println("Something went wrong!");
             System.out.println(e.getResponseBody());
         }
+    }
+
+    private V1Pod clone(V1Pod pod) {
+        V1Pod clone = new V1Pod();
+        clone.setMetadata(pod.getMetadata());
+        clone.setSpec(pod.getSpec());
+        clone.setApiVersion(pod.getApiVersion());
+        clone.setKind(pod.getKind());
+        clone.setStatus(pod.getStatus());
+
+        return clone;
     }
 
     private String printPods(List<V1Pod> allPods) {
