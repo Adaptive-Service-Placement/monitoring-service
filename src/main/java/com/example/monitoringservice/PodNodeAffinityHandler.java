@@ -4,7 +4,9 @@ import com.google.gson.reflect.TypeToken;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.openapi.models.V1Node;
+import io.kubernetes.client.openapi.models.V1ObjectMeta;
+import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.util.Watch;
 
 import java.util.List;
@@ -26,40 +28,47 @@ public class PodNodeAffinityHandler {
         int index = 0;
         for (Entry<V1Node, List<V1Pod>> entry : podNodeAssignement.entrySet()) {
             List<V1Pod> groupedPods = entry.getValue();
+            V1Node destinedNode = entry.getKey();
 
             String key = "group";
             String value = "group" + index;
 
             for (V1Pod pod : groupedPods) {
-                if (pod.getMetadata() == null) {
+                if (pod.getMetadata() == null || destinedNode.getMetadata() == null) {
                     continue;
                 }
-                this.setLabel(pod, key, value);
-                V1Affinity affinity = new V1Affinity();
-
-                V1PodAffinityTerm podAffinityTerm = new V1PodAffinityTerm();
-                podAffinityTerm.setLabelSelector(new V1LabelSelector().putMatchLabelsItem(key, value));
-                podAffinityTerm.setTopologyKey("kubernetes.io/hostname");
-
-                V1PodAffinity podAffinity = new V1PodAffinity();
-                podAffinity.addRequiredDuringSchedulingIgnoredDuringExecutionItem(podAffinityTerm);
-
-                affinity.setPodAffinity(podAffinity);
-
-                if (pod.getSpec() != null) {
-                    pod.setSpec(pod.getSpec().affinity(affinity));
-                }
-
-                System.out.println("Pod's labels:");
-                for (Entry<String, String> k : Objects.requireNonNull(pod.getMetadata().getLabels()).entrySet()) {
-                    System.out.println(k.getKey() + ":" + k.getValue());
-                }
-
-                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
-                api.createNamespacedPod("default", pod, null, null, null, null);
+//                this.setLabel(pod, key, value);
+//                V1Affinity affinity = new V1Affinity();
+//
+//                V1PodAffinityTerm podAffinityTerm = new V1PodAffinityTerm();
+//                podAffinityTerm.setLabelSelector(new V1LabelSelector().putMatchLabelsItem(key, value));
+//                podAffinityTerm.setTopologyKey("kubernetes.io/hostname");
+//
+//                V1PodAffinity podAffinity = new V1PodAffinity();
+//                podAffinity.addRequiredDuringSchedulingIgnoredDuringExecutionItem(podAffinityTerm);
+//
+//                affinity.setPodAffinity(podAffinity);
+//
+//                if (pod.getSpec() != null) {
+//                    pod.setSpec(pod.getSpec().affinity(affinity));
+//                }
+//
+//                System.out.println("Pod's labels:");
+//                for (Entry<String, String> k : Objects.requireNonNull(pod.getMetadata().getLabels()).entrySet()) {
+//                    System.out.println(k.getKey() + ":" + k.getValue());
+//                }
+//
+//                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
+//                api.createNamespacedPod("default", pod, null, null, null, null);
 
 //                replacePodOnceTerminated(pod);
 //                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
+                // create the patch object
+                V1Patch patch = new V1Patch("{\"spec\":{\"nodeName\":\"" + destinedNode.getMetadata().getName() + "\"}}");
+                V1Pod patchedPod = api.patchNamespacedPod(pod.getMetadata().getName(), "default", patch, null, null, null, null, null);
+
+                System.out.println("Updated pod " + pod.getMetadata().getName() + " to run on node " + Objects.requireNonNull(patchedPod.getSpec()).getNodeName());
+
             }
             index++;
         }
