@@ -1,6 +1,7 @@
 package com.example.monitoringservice;
 
 import com.google.gson.reflect.TypeToken;
+import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.*;
@@ -54,7 +55,10 @@ public class PodNodeAffinityHandler {
                     System.out.println(k.getKey() + ":" + k.getValue());
                 }
 
-                replacePodOnceTerminated(pod);
+                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
+                api.createNamespacedPod("default", pod, null, null, null, null);
+
+//                replacePodOnceTerminated(pod);
 //                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
             }
             index++;
@@ -62,12 +66,12 @@ public class PodNodeAffinityHandler {
     }
 
     private void replacePodOnceTerminated(V1Pod pod) throws ApiException {
+        api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
+
         Watch<V1Pod> watch = Watch.createWatch(api.getApiClient(),
                 api.listNamespacedPodCall("default", null, null, null, null, null, null, null, null, 10, true, null),
                 new TypeToken<Watch.Response<V1Pod>>() {
                 }.getType());
-
-        api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
 
         for (Watch.Response<V1Pod> event : watch) {
             System.out.println("Waiting for events ...");
@@ -81,6 +85,14 @@ public class PodNodeAffinityHandler {
                     api.createNamespacedPod("default", pod, null, null, null, null);
                 }
             }
+        }
+    }
+
+    private void patchPod(V1Pod pod, String key, String value) throws ApiException {
+        if (pod.getMetadata() != null) {
+            String patchJson = "{\"metadata\":{\"labels\":{\"" + key + "\":\"" + value + "\"}}}";
+            V1Patch patch = new V1Patch(patchJson);
+            api.patchNamespacedPod(pod.getMetadata().getName(), "default", patch, null, null, null, null, null);
         }
     }
 
