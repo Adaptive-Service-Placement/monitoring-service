@@ -55,11 +55,11 @@ public class PodNodeAffinityHandler {
                     System.out.println(k.getKey() + ":" + k.getValue());
                 }
 
-                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
-                api.createNamespacedPod("default", pod, null, null, null, null);
+//                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, null, null, null, null);
+//                api.createNamespacedPod("default", pod, null, null, null, null);
 
 //                replacePodOnceTerminated(pod);
-//                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
+                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
             }
             index++;
         }
