@@ -65,7 +65,7 @@ public class PodNodeAffinityHandler {
 //                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
                 // create the patch object
                 V1Patch patch = new V1Patch("[{\"op\": \"replace\", \"path\": \"/spec/nodeName\", \"value\": \"" + destinedNode.getMetadata().getName() + "\"}]");
-                V1Pod patchedPod = api.patchNamespacedPod(pod.getMetadata().getName(), "default", patch, null, null, null, null, null);
+                V1Pod patchedPod = api.patchNamespacedPod(pod.getMetadata().getName(), "default", patch, null, null, null, null, true);
 
                 System.out.println("Updated pod " + pod.getMetadata().getName() + " to run on node " + Objects.requireNonNull(patchedPod.getSpec()).getNodeName());
 
