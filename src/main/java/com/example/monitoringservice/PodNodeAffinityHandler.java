@@ -34,7 +34,7 @@ public class PodNodeAffinityHandler {
             String value = "group" + index;
 
             for (V1Pod pod : groupedPods) {
-                if (pod.getMetadata() == null || destinedNode.getMetadata() == null) {
+                if (pod.getMetadata() == null || destinedNode.getMetadata() == null || pod.getSpec() == null) {
                     continue;
                 }
 //                this.setLabel(pod, key, value);
@@ -57,17 +57,20 @@ public class PodNodeAffinityHandler {
 //                for (Entry<String, String> k : Objects.requireNonNull(pod.getMetadata().getLabels()).entrySet()) {
 //                    System.out.println(k.getKey() + ":" + k.getValue());
 //                }
+
+                pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
 //
-//                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
-//                api.createNamespacedPod("default", pod, null, null, null, null);
+                api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
+                api.createNamespacedPod("default", pod, null, null, null, null);
+
 
 //                replacePodOnceTerminated(pod);
 //                api.replaceNamespacedPod(pod.getMetadata().getName(), "default", pod, null, null, null, null);
                 // create the patch object
-                V1Patch patch = new V1Patch("[{\"op\": \"replace\", \"path\": \"/spec/nodeName\", \"value\": \"" + destinedNode.getMetadata().getName() + "\"}]");
-                V1Pod patchedPod = api.patchNamespacedPod(pod.getMetadata().getName(), "default", patch, null, null, null, null, true);
-
-                System.out.println("Updated pod " + pod.getMetadata().getName() + " to run on node " + Objects.requireNonNull(patchedPod.getSpec()).getNodeName());
+//                V1Patch patch = new V1Patch("[{\"op\": \"replace\", \"path\": \"/spec/nodeName\", \"value\": \"" + destinedNode.getMetadata().getName() + "\"}]");
+//                V1Pod patchedPod = api.patchNamespacedPod(pod.getMetadata().getName(), "default", patch, null, null, null, null, true);
+//
+//                System.out.println("Updated pod " + pod.getMetadata().getName() + " to run on node " + Objects.requireNonNull(patchedPod.getSpec()).getNodeName());
 
             }
             index++;
