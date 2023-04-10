@@ -4,10 +4,11 @@ import com.google.gson.reflect.TypeToken;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.openapi.models.V1Node;
+import io.kubernetes.client.openapi.models.V1ObjectMeta;
+import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.util.Watch;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,12 +76,12 @@ public class PodNodeAffinityHandler {
 
 
                 pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
+
+                System.out.println("Moving Pod: " + pod.getMetadata().getName() + "to Node: " + destinedNode.getMetadata().getName());
 //
                 api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
 
                 api.createNamespacedPod("default", pod, null, null, null, null);
-
-                System.out.println("Restarted Pod: " + pod.getMetadata().getName());
 
 
 //                replacePodOnceTerminated(pod);
