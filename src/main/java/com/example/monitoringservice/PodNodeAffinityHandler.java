@@ -77,7 +77,10 @@ public class PodNodeAffinityHandler {
 //                pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
 //
                 api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
+
                 api.createNamespacedPod("default", pod, null, null, null, null);
+
+                System.out.println("Restartet Pod: " + pod.getMetadata().getName());
 
 
 //                replacePodOnceTerminated(pod);
