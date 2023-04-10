@@ -80,7 +80,7 @@ public class PodNodeAffinityHandler {
 
                 api.createNamespacedPod("default", pod, null, null, null, null);
 
-                System.out.println("Restartet Pod: " + pod.getMetadata().getName());
+                System.out.println("Restarted Pod: " + pod.getMetadata().getName());
 
 
 //                replacePodOnceTerminated(pod);
