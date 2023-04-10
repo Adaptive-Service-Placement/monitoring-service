@@ -4,11 +4,10 @@ import com.google.gson.reflect.TypeToken;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Node;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.Watch;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,7 +57,24 @@ public class PodNodeAffinityHandler {
 //                    System.out.println(k.getKey() + ":" + k.getValue());
 //                }
 
-                pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
+                V1NodeSelectorRequirement nodeSelectorRequirement = new V1NodeSelectorRequirement()
+                        .key("kubernetes.io/hostname")
+                        .operator("In")
+                        .values(Collections.singletonList(destinedNode.getMetadata().getName()));
+
+                V1NodeSelectorTerm nodeSelectorTerm = new V1NodeSelectorTerm()
+                        .matchExpressions(Collections.singletonList(nodeSelectorRequirement));
+
+                V1NodeSelector nodeSelector = new V1NodeSelector()
+                        .nodeSelectorTerms(Collections.singletonList(nodeSelectorTerm));
+
+                V1Affinity affinity = new V1Affinity()
+                        .nodeAffinity(new V1NodeAffinity().requiredDuringSchedulingIgnoredDuringExecution(nodeSelector));
+
+                pod.getSpec().affinity(affinity);
+
+
+//                pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
 //
                 api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
                 api.createNamespacedPod("default", pod, null, null, null, null);
