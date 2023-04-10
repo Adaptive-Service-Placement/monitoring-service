@@ -57,24 +57,24 @@ public class PodNodeAffinityHandler {
 //                    System.out.println(k.getKey() + ":" + k.getValue());
 //                }
 
-                V1NodeSelectorRequirement nodeSelectorRequirement = new V1NodeSelectorRequirement()
-                        .key("kubernetes.io/hostname")
-                        .operator("In")
-                        .values(Collections.singletonList(destinedNode.getMetadata().getName()));
+//                V1NodeSelectorRequirement nodeSelectorRequirement = new V1NodeSelectorRequirement()
+//                        .key("kubernetes.io/hostname")
+//                        .operator("In")
+//                        .values(Collections.singletonList(destinedNode.getMetadata().getName()));
+//
+//                V1NodeSelectorTerm nodeSelectorTerm = new V1NodeSelectorTerm()
+//                        .matchExpressions(Collections.singletonList(nodeSelectorRequirement));
+//
+//                V1NodeSelector nodeSelector = new V1NodeSelector()
+//                        .nodeSelectorTerms(Collections.singletonList(nodeSelectorTerm));
+//
+//                V1Affinity affinity = new V1Affinity()
+//                        .nodeAffinity(new V1NodeAffinity().requiredDuringSchedulingIgnoredDuringExecution(nodeSelector));
+//
+//                pod.getSpec().affinity(affinity);
 
-                V1NodeSelectorTerm nodeSelectorTerm = new V1NodeSelectorTerm()
-                        .matchExpressions(Collections.singletonList(nodeSelectorRequirement));
 
-                V1NodeSelector nodeSelector = new V1NodeSelector()
-                        .nodeSelectorTerms(Collections.singletonList(nodeSelectorTerm));
-
-                V1Affinity affinity = new V1Affinity()
-                        .nodeAffinity(new V1NodeAffinity().requiredDuringSchedulingIgnoredDuringExecution(nodeSelector));
-
-                pod.getSpec().affinity(affinity);
-
-
-//                pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
+                pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
 //
                 api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
 
