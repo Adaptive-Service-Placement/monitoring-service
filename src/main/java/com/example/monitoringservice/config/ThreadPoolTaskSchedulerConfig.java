@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import java.time.Duration;
@@ -33,6 +34,9 @@ public class ThreadPoolTaskSchedulerConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.addFixedRateTask(executeMigrationTask, Duration.ofMinutes(Long.parseLong(fixedRate)));
+        Duration initialDelay = Duration.ofMinutes(Long.parseLong(fixedRate));
+        Duration delay = Duration.ofMinutes(Long.parseLong(fixedRate));
+        IntervalTask intervalTask = new IntervalTask(executeMigrationTask, initialDelay, delay);
+        taskRegistrar.addFixedRateTask(intervalTask);
     }
 }
