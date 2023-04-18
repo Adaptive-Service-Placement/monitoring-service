@@ -14,7 +14,9 @@ import java.time.Duration;
 @Configuration
 public class ThreadPoolTaskSchedulerConfig implements SchedulingConfigurer {
 
-    private final String fixedRate = System.getenv("MIGRATION_INTERVAL") != null ? System.getenv("MIGRATION_INTERVAL") : "24";
+    private static final String MINUTES_PER_DAY = "1440";
+
+    private final String fixedRate = System.getenv("MIGRATION_INTERVAL") != null ? System.getenv("MIGRATION_INTERVAL") : MINUTES_PER_DAY;
 
     @Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
@@ -27,6 +29,6 @@ public class ThreadPoolTaskSchedulerConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.addFixedRateTask(new ExecuteMigrationTask(), Duration.ofHours(Long.parseLong(fixedRate)));
+        taskRegistrar.addFixedRateTask(new ExecuteMigrationTask(), Duration.ofMinutes(Long.parseLong(fixedRate)));
     }
 }
