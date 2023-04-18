@@ -10,13 +10,13 @@ import java.time.Duration;
 @Component
 public class MigrationStarter {
 
-    private final String fixedRate = System.getenv("MIGRATION_INTERVAL") != null ? System.getenv("MIGRATION_INTERVAL") : "24";
-
-    @Autowired
-    ThreadPoolTaskScheduler threadPoolTaskScheduler;
-
-    @Scheduled
-    public void startMigrationChain() {
-        threadPoolTaskScheduler.scheduleAtFixedRate(new ExecuteMigrationTask(), Duration.ofHours(Long.parseLong(fixedRate)));
-    }
+//    private final String fixedRate = System.getenv("MIGRATION_INTERVAL") != null ? System.getenv("MIGRATION_INTERVAL") : "24";
+//
+//    @Autowired
+//    ThreadPoolTaskScheduler threadPoolTaskScheduler;
+//
+//    @Scheduled
+//    public void startMigrationChain() {
+//        threadPoolTaskScheduler.scheduleAtFixedRate(new ExecuteMigrationTask(), Duration.ofHours(Long.parseLong(fixedRate)));
+//    }
 }
