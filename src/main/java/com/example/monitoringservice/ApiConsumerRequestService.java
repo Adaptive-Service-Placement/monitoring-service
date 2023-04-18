@@ -37,6 +37,7 @@ public class ApiConsumerRequestService {
     @EventListener(ContextRefreshedEvent.class)
     public void requestServicesFromRabbitMq() {
         String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
+        System.out.println("Migration Interval: " + System.getenv());
 
         String requestUrl = rabbitmqApiConsumersUrl(IP);
         String json = Utils.getJsonResponseFromAPI(requestUrl);
