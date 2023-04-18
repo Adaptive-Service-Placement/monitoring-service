@@ -1,6 +1,7 @@
 package com.example.monitoringservice.config;
 
 import com.example.monitoringservice.ExecuteMigrationTask;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +19,9 @@ public class ThreadPoolTaskSchedulerConfig implements SchedulingConfigurer {
 
     private final String fixedRate = System.getenv("MIGRATION_INTERVAL") != null ? System.getenv("MIGRATION_INTERVAL") : MINUTES_PER_DAY;
 
+    @Autowired
+    ExecuteMigrationTask executeMigrationTask;
+
     @Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler
@@ -29,6 +33,6 @@ public class ThreadPoolTaskSchedulerConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.addFixedRateTask(new ExecuteMigrationTask(), Duration.ofMinutes(Long.parseLong(fixedRate)));
+        taskRegistrar.addFixedRateTask(executeMigrationTask, Duration.ofMinutes(Long.parseLong(fixedRate)));
     }
 }
