@@ -24,10 +24,14 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.example.monitoringservice.RabbitmqApiUrlProvider.rabbitmqApiConsumersUrl;
+import static com.example.monitoringservice.config.MessagingConfig.QUEUE;
+import static com.example.monitoringservice.config.MessagingConfig.START_MIGRATION_QUEUE;
 import static java.util.List.of;
 
 @Component
 public class ApiConsumerRequestService {
+
+    private static final List<String> INTERNAL_QUEUES = of(START_MIGRATION_QUEUE, QUEUE, "monitoring.mapping.migration", "monitoring.mapping");
 
     @Autowired
     ServiceTableRepository serviceTableRepository;
@@ -41,7 +45,7 @@ public class ApiConsumerRequestService {
 
         String requestUrl = rabbitmqApiConsumersUrl(IP);
         String json = Utils.getJsonResponseFromAPI(requestUrl);
-        // TODO: filter mapping, monitoring and migration service
+
         try {
             JSONArray jsonArray = new JSONArray(json);
             IntStream.range(0, jsonArray.length())
@@ -51,7 +55,7 @@ public class ApiConsumerRequestService {
                         String hostIp = getPeerIp(jsonObject);
                         String hostPort = getPeerPort(jsonObject);
                         String queueName = getQueueName(jsonObject);
-                        if (hostIp != null && hostPort != null && queueName != null) {
+                        if (hostIp != null && hostPort != null && queueName != null && !INTERNAL_QUEUES.contains(queueName)) {
                             System.out.println("Detected Service: " + hostIp + ":" + hostPort);
                             System.out.println("Listens to: " + queueName);
                             ServiceTable service = new ServiceTable();
