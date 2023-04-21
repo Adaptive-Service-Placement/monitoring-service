@@ -152,6 +152,9 @@ public class PodNodeAffinityHandler {
         clonedDeployment.setApiVersion(deploymentToClone.getApiVersion());
         clonedDeployment.setKind(deploymentToClone.getKind());
         clonedDeployment.setMetadata(deploymentToClone.getMetadata());
+        if (clonedDeployment.getMetadata() != null) {
+            clonedDeployment.getMetadata().setResourceVersion(null);
+        }
         clonedDeployment.setSpec(deploymentToClone.getSpec());
         clonedDeployment.setStatus(deploymentToClone.getStatus());
 
