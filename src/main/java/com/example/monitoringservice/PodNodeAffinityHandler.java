@@ -79,22 +79,30 @@ public class PodNodeAffinityHandler {
                     System.out.println("Deployment gefunden!");
                     V1Deployment oldDeployment = deployments.getItems().get(0);
                     V1Deployment newDeployment = clone(oldDeployment);
-                    debugPrintDeployment(oldDeployment);
+//                    debugPrintDeployment(oldDeployment);
+                    V1PodSpec podSpec = getPodSpecFromDeploymentNullsafe(newDeployment);
+                    if (podSpec != null) {
+                        podSpec.putNodeSelectorItem("kubernetes.io/hostname", destinedNode.getMetadata().getName());
+                    }
+                    if (oldDeployment.getMetadata() != null) {
+                        appsV1Api.deleteNamespacedDeployment(oldDeployment.getMetadata().getName(), "default", null, null, 0, null, "Background", null);
+                        appsV1Api.createNamespacedDeployment("default", newDeployment, null, null, null, null);
+                    }
                 } else {
                     System.out.println("No Deployment found!");
                 }
 
 
-                if (pod.getSpec().getNodeName() != null && destinedNode.getMetadata().getName() != null && pod.getSpec().getNodeName().equals(destinedNode.getMetadata().getName())) {
-//                    pod.getSpec().putNodeSelectorItem("kubernetes.io/hostname", destinedNode.getMetadata().getName());
-                    pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
-
-                    System.out.println("Moving Pod: " + pod.getMetadata().getName() + "to Node: " + destinedNode.getMetadata().getName());
+//                if (pod.getSpec().getNodeName() != null && destinedNode.getMetadata().getName() != null && pod.getSpec().getNodeName().equals(destinedNode.getMetadata().getName())) {
+////                    pod.getSpec().putNodeSelectorItem("kubernetes.io/hostname", destinedNode.getMetadata().getName());
+//                    pod.getSpec().setNodeName(destinedNode.getMetadata().getName());
 //
-                    api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
-
-                    api.createNamespacedPod("default", pod, null, null, null, null);
-                }
+//                    System.out.println("Moving Pod: " + pod.getMetadata().getName() + "to Node: " + destinedNode.getMetadata().getName());
+////
+//                    api.deleteNamespacedPod(Objects.requireNonNull(pod.getMetadata()).getName(), "default", null, null, 0, null, "Background", null);
+//
+//                    api.createNamespacedPod("default", pod, null, null, null, null);
+//                }
 
 
 //                replacePodOnceTerminated(pod);
@@ -108,6 +116,13 @@ public class PodNodeAffinityHandler {
             }
             index++;
         }
+    }
+
+    private V1PodSpec getPodSpecFromDeploymentNullsafe(V1Deployment deployment) {
+        if (deployment != null && deployment.getSpec() != null && deployment.getSpec() != null && deployment.getSpec().getTemplate() != null) {
+            return deployment.getSpec().getTemplate().getSpec();
+        }
+        return null;
     }
 
     private void debugPrintDeployment(V1Deployment oldDeployment) {
