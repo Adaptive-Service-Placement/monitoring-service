@@ -3,10 +3,9 @@ package com.example.monitoringservice;
 import com.google.gson.reflect.TypeToken;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Node;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.Watch;
 
 import java.util.List;
@@ -18,10 +17,12 @@ public class PodNodeAffinityHandler {
 
     private final Map<V1Node, List<V1Pod>> podNodeAssignement;
     private final CoreV1Api api;
+    private final AppsV1Api appsV1Api;
 
-    public PodNodeAffinityHandler(CoreV1Api api, Map<V1Node, List<V1Pod>> podNodeAssignement) {
+    public PodNodeAffinityHandler(CoreV1Api api, AppsV1Api appsV1Api, Map<V1Node, List<V1Pod>> podNodeAssignement) {
         this.api = api;
         this.podNodeAssignement = podNodeAssignement;
+        this.appsV1Api = appsV1Api;
     }
 
     public void setAllAffinities() throws ApiException {
@@ -29,9 +30,6 @@ public class PodNodeAffinityHandler {
         for (Entry<V1Node, List<V1Pod>> entry : podNodeAssignement.entrySet()) {
             List<V1Pod> groupedPods = entry.getValue();
             V1Node destinedNode = entry.getKey();
-
-            String key = "group";
-            String value = "group" + index;
 
             for (V1Pod pod : groupedPods) {
                 if (pod.getMetadata() == null || destinedNode.getMetadata() == null || pod.getSpec() == null) {
@@ -74,6 +72,18 @@ public class PodNodeAffinityHandler {
 //
 //                pod.getSpec().affinity(affinity);
 
+                String releaseLabelValue = pod.getMetadata().getLabels() != null ? pod.getMetadata().getLabels().get("release") : "";
+
+                V1DeploymentList deployments = appsV1Api.listNamespacedDeployment("default", null, null, null, null, "release=" + releaseLabelValue, null, null, null, null, null);
+                if (deployments != null) {
+                    System.out.println("Deployment gefunden!");
+                    V1Deployment oldDeployment = deployments.getItems().get(0);
+                    V1Deployment newDeployment = clone(oldDeployment);
+                    debugPrintDeployment(oldDeployment);
+                } else {
+                    System.out.println("No Deployment found!");
+                }
+
 
                 if (pod.getSpec().getNodeName() != null && destinedNode.getMetadata().getName() != null && pod.getSpec().getNodeName().equals(destinedNode.getMetadata().getName())) {
 //                    pod.getSpec().putNodeSelectorItem("kubernetes.io/hostname", destinedNode.getMetadata().getName());
@@ -98,6 +108,39 @@ public class PodNodeAffinityHandler {
             }
             index++;
         }
+    }
+
+    private void debugPrintDeployment(V1Deployment oldDeployment) {
+        if (oldDeployment != null && oldDeployment.getSpec() != null) {
+            System.out.println("V1DeploymentSpec not null!");
+            V1DeploymentSpec spec = oldDeployment.getSpec();
+            if (spec.getTemplate() != null) {
+                System.out.println("V1PodTemplateSpec not null!");
+                V1PodTemplateSpec templateSpec = spec.getTemplate();
+                if (templateSpec.getSpec() != null) {
+                    System.out.println("V1PodSpec not null!");
+                    V1PodSpec podSpec = templateSpec.getSpec();
+                    System.out.println(podSpec);
+                } else {
+                    System.out.println("V1PodSpec is null!");
+                }
+            } else {
+                System.out.println("V1PodTemplateSpec is null!");
+            }
+        } else {
+            System.out.println("V1DeploymentSpec is null!");
+        }
+    }
+
+    private V1Deployment clone(V1Deployment deploymentToClone) {
+        V1Deployment clonedDeployment = new V1Deployment();
+        clonedDeployment.setApiVersion(deploymentToClone.getApiVersion());
+        clonedDeployment.setKind(deploymentToClone.getKind());
+        clonedDeployment.setMetadata(deploymentToClone.getMetadata());
+        clonedDeployment.setSpec(deploymentToClone.getSpec());
+        clonedDeployment.setStatus(deploymentToClone.getStatus());
+
+        return clonedDeployment;
     }
 
     private void replacePodOnceTerminated(V1Pod pod) throws ApiException {

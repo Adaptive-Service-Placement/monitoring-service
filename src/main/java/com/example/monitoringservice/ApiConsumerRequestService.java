@@ -6,6 +6,7 @@ import com.rabbitmq.client.Connection;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1NodeList;
@@ -86,6 +87,7 @@ public class ApiConsumerRequestService {
         Configuration.setDefaultApiClient(client);
 
         CoreV1Api api = new CoreV1Api();
+        AppsV1Api appsV1Api = new AppsV1Api();
 
         Map<V1Node, List<V1Pod>> assignement = new HashMap<>();
 
@@ -106,7 +108,7 @@ public class ApiConsumerRequestService {
             assignement.put(allNodes.get(2), of(clone(allPods.get(4))));
         }
 
-        PodNodeAffinityHandler handler = new PodNodeAffinityHandler(api, assignement);
+        PodNodeAffinityHandler handler = new PodNodeAffinityHandler(api, appsV1Api, assignement);
         try {
             handler.setAllAffinities();
         } catch (ApiException e) {
