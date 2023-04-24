@@ -15,15 +15,15 @@ import java.util.List;
 @Configuration
 public class MessagingConfig {
 
-    public static final String QUEUE = "monitoring_queue";
-    public static final String EXCHANGE = "bachelor_exchange";
+    public static final String MONITORING_QUEUE = "monitoring_queue";
+    public static final String APPLICATION_EXCHANGE = "bachelor_exchange";
     public static final String MONITORING_ROUTING_KEY = "monitoring_routingKey";
 
     public static final String INTERNAL_EXCHANGE = "internal_exchange";
     public static final String MAPPING_ROUTING_KEY = "mapping_routingkey";
 
-    public static final String START_MIGRATION_QUEUE = "start.migration";
-    public static final String START_MIGRATION_ROUTING_KEY = "start_routingkey";
+    public static final String MIGRATION_FINISHED_QUEUE = "finished.migration";
+    public static final String MIGRATION_FINISHED_ROUTING_KEY = "finished_routingkey";
 
     @Bean
     public MessageConverter converter() {
@@ -31,25 +31,30 @@ public class MessagingConfig {
     }
 
     @Bean
-    public Queue queue() {
-        return new Queue(QUEUE);
+    public Queue monitoringQueue() {
+        return new Queue(MONITORING_QUEUE);
     }
 
     @Bean
-    public Queue queue2() {
-        return new Queue(START_MIGRATION_QUEUE);
+    public Queue finishedMigrationQueue() {
+        return new Queue(MIGRATION_FINISHED_QUEUE);
     }
 
     @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE);
+    public TopicExchange applicationExchange() {
+        return new TopicExchange(APPLICATION_EXCHANGE);
+    }
+
+    @Bean
+    public TopicExchange internalExchange() {
+        return new TopicExchange(INTERNAL_EXCHANGE);
     }
 
     @Bean
     public List<Binding> binding() {
         return Arrays.asList(
-                BindingBuilder.bind(queue()).to(exchange()).with(MONITORING_ROUTING_KEY),
-                BindingBuilder.bind(queue2()).to(exchange()).with(START_MIGRATION_ROUTING_KEY)
+                BindingBuilder.bind(monitoringQueue()).to(applicationExchange()).with(MONITORING_ROUTING_KEY),
+                BindingBuilder.bind(finishedMigrationQueue()).to(internalExchange()).with(MIGRATION_FINISHED_ROUTING_KEY)
         );
     }
 

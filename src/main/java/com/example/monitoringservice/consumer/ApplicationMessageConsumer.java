@@ -36,7 +36,7 @@ public class ApplicationMessageConsumer {
     @Autowired
     CommunicationTableRepository communicationTableRepository;
 
-    @RabbitListener(queues = MessagingConfig.QUEUE)
+    @RabbitListener(queues = MessagingConfig.MONITORING_QUEUE)
     public void consumeMessagingInformation(MessagingInformation messagingInformation) {
         System.out.println("Sent message: " + messagingInformation);
         System.out.println("Exchange: " + messagingInformation.getExchange());

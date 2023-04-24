@@ -16,14 +16,14 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static com.example.monitoringservice.RabbitmqApiUrlProvider.rabbitmqApiConsumersUrl;
-import static com.example.monitoringservice.config.MessagingConfig.QUEUE;
-import static com.example.monitoringservice.config.MessagingConfig.START_MIGRATION_QUEUE;
+import static com.example.monitoringservice.config.MessagingConfig.MIGRATION_FINISHED_QUEUE;
+import static com.example.monitoringservice.config.MessagingConfig.MONITORING_QUEUE;
 import static java.util.List.of;
 
 @Component
 public class ApiConsumerRequestService {
 
-    private static final List<String> INTERNAL_QUEUES = of(START_MIGRATION_QUEUE, QUEUE, "monitoring.mapping.migration", "monitoring.mapping");
+    private static final List<String> INTERNAL_QUEUES = of(MIGRATION_FINISHED_QUEUE, MONITORING_QUEUE, "monitoring.mapping.migration", "monitoring.mapping");
 
     @Autowired
     ServiceTableRepository serviceTableRepository;
