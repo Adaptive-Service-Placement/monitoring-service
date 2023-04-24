@@ -13,9 +13,6 @@ import io.kubernetes.client.openapi.models.V1NodeList;
 import io.kubernetes.client.util.ClientBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,10 +27,6 @@ public class StartMigrationChainTask implements Runnable {
     // prepares all information using the database and ApplicationSystem object
     // forwards object to mapping service
 
-    @Autowired
-    private ApplicationContext applicationContext;
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private RabbitTemplate template;
     @Autowired
@@ -84,10 +77,9 @@ public class StartMigrationChainTask implements Runnable {
             System.out.println(e.getResponseBody());
         }
 
-        // delete all entries and trigger new ApiConsumerRequest
+        // delete all entries
         serviceTableRepository.deleteAll();
         communicationTableRepository.deleteAll();
-        applicationEventPublisher.publishEvent(new ContextRefreshedEvent(applicationContext));
     }
 
 

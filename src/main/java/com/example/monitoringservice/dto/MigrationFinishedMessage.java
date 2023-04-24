@@ -9,6 +9,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class WakeupCall {
-    private String wakeupMessage;
+public class MigrationFinishedMessage {
+    private boolean migrationSuccessful;
 }
