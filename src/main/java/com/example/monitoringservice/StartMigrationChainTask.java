@@ -13,6 +13,9 @@ import io.kubernetes.client.openapi.models.V1NodeList;
 import io.kubernetes.client.util.ClientBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,16 +26,20 @@ import java.util.UUID;
 import static java.math.BigDecimal.ZERO;
 
 @Component
-public class ExecuteMigrationTask implements Runnable {
+public class StartMigrationChainTask implements Runnable {
     // prepares all information using the database and ApplicationSystem object
     // forwards object to mapping service
 
     @Autowired
-    RabbitTemplate template;
+    private ApplicationContext applicationContext;
     @Autowired
-    ServiceTableRepository serviceTableRepository;
+    private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
-    CommunicationTableRepository communicationTableRepository;
+    private RabbitTemplate template;
+    @Autowired
+    private ServiceTableRepository serviceTableRepository;
+    @Autowired
+    private CommunicationTableRepository communicationTableRepository;
 
     @Override
     public void run() {
@@ -77,7 +84,10 @@ public class ExecuteMigrationTask implements Runnable {
             System.out.println(e.getResponseBody());
         }
 
-        // TODO: delete all entries in table
+        // delete all entries and trigger new ApiConsumerRequest
+        serviceTableRepository.deleteAll();
+        communicationTableRepository.deleteAll();
+        applicationEventPublisher.publishEvent(new ContextRefreshedEvent(applicationContext));
     }
 
 
