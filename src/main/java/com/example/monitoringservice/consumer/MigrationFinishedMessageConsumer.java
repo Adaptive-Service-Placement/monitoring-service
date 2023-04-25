@@ -21,7 +21,10 @@ public class MigrationFinishedMessageConsumer {
     @RabbitListener(queues = MessagingConfig.MIGRATION_FINISHED_QUEUE)
     public void consumeMigrationFinishedMessage(MigrationFinishedMessage migrationFinishedMessage) {
         if (migrationFinishedMessage != null && migrationFinishedMessage.isMigrationSuccessful()) {
+            System.out.println("Migration was successful!");
             applicationEventPublisher.publishEvent(new ContextRefreshedEvent(applicationContext));
+        } else {
+            System.out.println("Migration was not successful!");
         }
     }
 }
