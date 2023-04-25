@@ -77,6 +77,7 @@ public class StartMigrationChainTask implements Runnable {
             System.out.println(e.getResponseBody());
         }
 
+        System.out.println("Deleting all entries...");
         // delete all entries
         serviceTableRepository.deleteAll();
         communicationTableRepository.deleteAll();
