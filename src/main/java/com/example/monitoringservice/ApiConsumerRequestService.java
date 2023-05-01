@@ -1,5 +1,6 @@
 package com.example.monitoringservice;
 
+import com.example.monitoringservice.event.MigrationDoneEvent;
 import com.example.monitoringservice.mysql.repositories.ServiceTableRepository;
 import com.example.monitoringservice.mysql.tables.ServiceTable;
 import com.rabbitmq.client.Connection;
@@ -31,7 +32,16 @@ public class ApiConsumerRequestService {
     Connection connection;
 
     @EventListener(ContextRefreshedEvent.class)
+    public void requestServicesFromRabbitMqFromStart() {
+        requestServices();
+    }
+
+    @EventListener(MigrationDoneEvent.class)
     public void requestServicesFromRabbitMq() {
+        requestServices();
+    }
+
+    private void requestServices() {
         String IP = Objects.requireNonNull(connection).getAddress().getHostAddress();
         System.out.println("Migration Interval: " + System.getenv("MIGRATION_INTERVAL"));
 

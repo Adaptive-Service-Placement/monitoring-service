@@ -2,12 +2,12 @@ package com.example.monitoringservice.consumer;
 
 import com.example.monitoringservice.config.MessagingConfig;
 import com.example.monitoringservice.dto.MigrationFinishedMessage;
+import com.example.monitoringservice.event.MigrationDoneEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,7 +24,7 @@ public class MigrationFinishedMessageConsumer {
     public void consumeMigrationFinishedMessage(MigrationFinishedMessage migrationFinishedMessage) {
         if (migrationFinishedMessage != null && migrationFinishedMessage.isMigrationSuccessful()) {
             System.out.println("Migration was successful!");
-            applicationEventPublisher.publishEvent(new ContextRefreshedEvent(applicationContext));
+            applicationEventPublisher.publishEvent(new MigrationDoneEvent(this));
         } else {
             System.out.println("Migration was not successful!");
         }
