@@ -12,9 +12,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -37,19 +34,6 @@ public class ApiConsumerRequestService {
     @EventListener(ContextRefreshedEvent.class)
     public void requestServicesFromRabbitMqFromStart() {
         requestServices();
-
-        // the following code is temporary and for debugging purposes
-        System.out.println("Checking seq server url...");
-        try {
-            URL url = new URL("my-seq.default.svc.cluster.local");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(10000);
-            System.out.println("Response from seq server: " + connection.getResponseCode());
-        } catch (IOException e) {
-            System.out.println("Something went wrong when checking seq server!");
-            System.out.println(e.getMessage());
-        }
     }
 
     @EventListener(MigrationDoneEvent.class)
