@@ -41,7 +41,7 @@ public class ApiConsumerRequestService {
         // the following code is temporary and for debugging purposes
         System.out.println("Checking seq server url...");
         try {
-            URL url = new URL("my-seq.default.svc.cluster.local");
+            URL url = new URL("http://my-seq.default.svc.cluster.local");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(10000);
