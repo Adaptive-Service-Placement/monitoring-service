@@ -46,7 +46,9 @@ public class ApiConsumerRequestService {
         System.out.println("Migration Interval: " + System.getenv("MIGRATION_INTERVAL"));
 
         String requestUrl = rabbitmqApiConsumersUrl(IP);
+        System.out.println("Request URL: " + requestUrl);
         String json = Utils.getJsonResponseFromAPI(requestUrl);
+        System.out.println("JSON: " + json);
 
         try {
             JSONArray jsonArray = new JSONArray(json);
@@ -68,7 +70,8 @@ public class ApiConsumerRequestService {
                         }
                     });
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.out.println("Something went wrong evaluating json response.");
+            System.out.println("Error messag: " + e.getMessage());
         }
     }
 
