@@ -38,8 +38,8 @@ public class Utils {
     }
 
     private static final class BasicAuthenticator extends Authenticator {
-        String user = System.getenv("RABBITMQ_USER") != null ? System.getenv("RABBITMQ_USER") : "guest";
-        String password = System.getenv("RABBITMQ_PASSWORD") != null ? System.getenv("RABBITMQ_PASSWORD") : "guest";
+        String user = System.getenv("SPRING_RABBITMQ_USERNAME") != null ? System.getenv("SPRING_RABBITMQ_USERNAME") : "guest";
+        String password = System.getenv("SPRING_RABBITMQ_PASSWORD") != null ? System.getenv("SPRING_RABBITMQ_PASSWORD") : "guest";
 
         protected PasswordAuthentication getPasswordAuthentication() {
             return new PasswordAuthentication(user, password.toCharArray());
